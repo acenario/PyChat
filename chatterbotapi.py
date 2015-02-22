@@ -1,23 +1,22 @@
 import hashlib
 import urllib
-import urllib2
 import uuid
 import xml.dom.minidom
 
 """
     chatterbotapi
     Copyright (C) 2011 pierredavidbelanger@gmail.com
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-    
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
-    
+
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
@@ -90,13 +89,24 @@ class _CleverbotSession(ChatterBotSession):
         self.vars['cleanslate'] = 'false'
 
     def think_thought(self, thought):
+        try:
+            import urllib.request as urllib2
+        except ImportError:
+            import urllib2
+        try:
+            import urllib.parse as urllib
+        except ImportError:
+            import urllib
         self.vars['stimulus'] = thought.text
         data = urllib.urlencode(self.vars)
         data_to_digest = data[9:self.bot.endIndex]
+        data_to_digest = data_to_digest.encode('utf-8')
         data_digest = hashlib.md5(data_to_digest).hexdigest()
         data = data + '&icognocheck=' + data_digest
+        data = data.encode('utf-8')
         url_response = urllib2.urlopen(self.bot.url, data)
         response = url_response.read()
+        response = response.decode('utf-8')
         response_values = response.split('\r')
         #self.vars['??'] = _utils_string_at_index(response_values, 0)
         self.vars['sessionid'] = _utils_string_at_index(response_values, 1)
@@ -146,6 +156,14 @@ class _PandorabotsSession(ChatterBotSession):
         self.vars['custid'] = uuid.uuid1()
 
     def think_thought(self, thought):
+        try:
+            import urllib.request as urllib2
+        except ImportError:
+            import urllib2
+        try:
+            import urllib.parse as urllib
+        except ImportError:
+            import urllib
         self.vars['input'] = thought.text
         data = urllib.urlencode(self.vars)
         url_response = urllib2.urlopen('http://www.pandorabots.com/pandora/talk-xml', data)

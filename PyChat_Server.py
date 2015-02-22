@@ -11,7 +11,7 @@ can publish its port address (5280).
     def __init__(self):
         self.clients = set()
 
-    def listen(self,IP="10.7.88.108",port=6280):
+    def listen(self,IP="127.0.0.1",port=6280):
 
         socket, AF_INET, SOCK_DGRAM, timeout = CN_Sockets.socket, CN_Sockets.AF_INET, CN_Sockets.SOCK_DGRAM, CN_Sockets.timeout
 
@@ -77,5 +77,6 @@ can publish its port address (5280).
 
 
 if __name__ == "__main__":
+    address = input("Enter local address: ")
     UDP_Server = UDP_Server()
-    UDP_Server.listen()
+    UDP_Server.listen(IP=address)
